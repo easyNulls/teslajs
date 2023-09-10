@@ -21,6 +21,7 @@ const { REDIRECT_URL, SSO_BASE_HOST, LOCALE, API_BASE_HOST, STREAMING_HOST, SSO_
  *
  */
 export class TeslaAPI {
+  
   private _config: ApiConfig = {
     redirectUrl: '',
     ossAuthorizeHost: '',
@@ -32,11 +33,9 @@ export class TeslaAPI {
     appUserAgent: null
   }
 
-  // private _authorizeApi: AuthorizeApi | null = null
-
   private _dataSource: AccessTokenDataSource = new InMemoryAccessTokenManager()
 
-  constructor() {
+  private constructor() {
     this.toDefault()
   }
 
@@ -71,7 +70,7 @@ export class TeslaAPI {
   }
 
   public userTeslaAPIs = (userId: string) => {
-    const t = this._dataSource.findLastAccessToken(userId)
+    const t = this._dataSource.findLastOneAccessToken(userId)
     if (!t) throw new Error(`${userId} isn't logged in.`)
 
     return {
@@ -121,43 +120,45 @@ export class TeslaAPI {
    */
   public login = (username: string, password: string, mfaDeviceName: OrNullable<string> = null, mfaPassCode: OrNullable<string> = null): Promise<AccessToken | null> => {
     return this.authorize().login(username, password, mfaDeviceName, mfaPassCode).then(res => {
-      if (res !== null) this._dataSource.toAccessToken(username, res)
+      if (res) this._dataSource.toAccessToken(username, res)
       return res
     })
   }
+
+  /**
+   * 根据tokenId 获取登录信息
+   * 
+   * @param tokenId 
+   * @returns 
+   */
+  public loginFromTokenId = (tokenId: string) => this._dataSource.findAccessTokenFromTokenId(tokenId)
 
   private checkTeslamotorsHost = () => {
     if (!this._config.teslamotorsHost) throw new Error('teslamotors_host is NULL.')
   }
 
+  /**
+   * 构建 ApiOptions参数，调用 createApiInstance() 方法来创建 Api 实例
+   * 
+   * @param userId 
+   * @returns TeslaAPI调用所需的参数
+   */
   private options = (userId: string): ApiOptions => {
-    const obtainAccessTokenFn = () =>
-      new Promise<AccessToken>((resolve, reject) => {
-        this._dataSource
-          .findLastAccessToken(userId)
-          .then(res => {
-            if (res) {
-              resolve(res)
-            } else {
-              reject(new Error(`${userId} isn't logged in.`))
-            }
-          })
-          .catch(e => reject(e))
-      })
+    const obtainAccessTokenFn = () => new Promise<AccessToken>((resolve, reject) => {
+      this._dataSource.findLastOneAccessToken(userId)
+        .then(res => {
+          if (res) {
+            resolve(res)
+          } else {
+            reject(new Error(`${userId} isn't logged in.`))
+          }
+        }).catch(e => reject(e))
+    })
+    const { _config: config } = this
 
-    const { ossAuthorizeHost, redirectUrl, streamingHost, teslamotorsHost, locale, clientId, userAgent, appUserAgent } = this._config
     return {
       obtainAccessTokenFn,
-      config: {
-        redirectUrl: redirectUrl!!,
-        ossAuthorizeHost: ossAuthorizeHost!!,
-        streamingHost: streamingHost!!,
-        teslamotorsHost: teslamotorsHost!!,
-        locale: locale!!,
-        clientId: clientId!!,
-        userAgent: userAgent,
-        appUserAgent: appUserAgent
-      }
+      config
     }
   }
 

@@ -26,60 +26,10 @@ yarn add @0tag/tesla-js
 TokenDataSource: 提供teslaAPI所需的AccessToken数据储存接口；
 Fetch: 提供访问TeslaAPI所需的GET/POST/REQUEST函数接口。
 
-```
-import AxiosInstance from './index'
-import { Response, RequestConfig, Fetch } from '@0tag/tesla-js'
-
-export class AxiosFetch implements Fetch {
-
-	async request<T = any, R = Response<T>, D = any>(config: RequestConfig<D>): Promise<R> {
-		const res = await AxiosInstance.request<T>({
-			...config
-		})
-		return <R>{
-			data: res?.data,
-			status: res?.status,
-			statusText: res?.statusText,
-			headers: res?.headers,
-			config: {
-				...res?.config
-			}
-		}
-	}
-
-	async get<T = any, R = Response<T>, D = any>(url: string, config?: RequestConfig<D>): Promise<R> {
-		const res = await AxiosInstance.get<T>(url, { ...config })
-		return <R>{
-			data: res?.data,
-			status: res?.status,
-			statusText: res?.statusText,
-			headers: res?.headers,
-			config: {
-				...res?.config
-			}
-		}
-	}
-
-	async post<T = any, R = Response<T>, D = any>(url: string, data?: D, config?: RequestConfig<D> | undefined): Promise<R> {
-		const res = await AxiosInstance.post<T>(url, data, { ...config })
-		return <R>{
-			data: res?.data,
-			status: res?.status,
-			statusText: res?.statusText,
-			headers: res?.headers,
-			config: {
-				...res?.config
-			}
-		}
-	}
-}
-
-
-```
-
 ### TeslaAPI提供了以下的API
  可根存储的用户唯一编号来初始化并获取对应的API
-```
+
+``` typescript
 
 	userTeslaAPIs: (userId: string) => {
 		vehicles: VehiclesApi;     
