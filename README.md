@@ -30,20 +30,19 @@ Fetch: 提供访问TeslaAPI所需的GET/POST/REQUEST函数接口。
  可根存储的用户唯一编号来初始化并获取对应的API
 
 ``` typescript
-
-	userTeslaAPIs: (userId: string) => {
-		vehicles: VehiclesApi;     
-		users: UsersApi;
-		products: ProductsApi;      
-		streams: StreamsApi;
-		vehicleState: VehicleStateApi;
-		vehicleData: VehicleDataApi;
-		vehicleCommonds_Alerts: AlertsApi;
-		vehicleCommonds_Doors: DoorsApi;
-		vehicleCommonds_Homelink: HomelinkApi;
-		vehicleCommonds_Media: MediaApi;
-		vehicleCommonds_RemoteControl: RemoteControlApi;
-	};
+userTeslaAPIs: (userId: string) => {
+	vehicles: VehiclesApi;     
+	users: UsersApi;
+	products: ProductsApi;      
+	streams: StreamsApi;
+	vehicleState: VehicleStateApi;
+	vehicleData: VehicleDataApi;
+	vehicleCommonds_Alerts: AlertsApi;
+	vehicleCommonds_Doors: DoorsApi;
+	vehicleCommonds_Homelink: HomelinkApi;
+	vehicleCommonds_Media: MediaApi;
+	vehicleCommonds_RemoteControl: RemoteControlApi;
+};
 ```
 
 ## 使用教程
